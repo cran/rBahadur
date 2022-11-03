@@ -1,0 +1,13 @@
+4d1e0e01ab2243757bdd6ed5596a7291 *DESCRIPTION
+576e4ddfb83b3f59885547135d5df0fa *NAMESPACE
+b10a6eb9b39ae920f3cab6ea5f498ba1 *R/am_covariance_structure.R
+dc8d7edfca03bc4b49a89a3441c62640 *R/am_equilibrium_parameters.R
+e926310cf5528bdbeb2efca92d2183c1 *R/am_simulate.R
+032b3b799d2f0067a4b38994cef2f2f6 *R/rb_dplr.R
+9cd7edd6d3b973b2a48efa78ffa6d08a *R/rb_unstr.R
+73d98cf342552cf03652e8b9c0376eb0 *README.md
+28379ea89cf78db64ea156ee4730cc11 *man/am_covariance_structure.Rd
+36f505e2263d79af692f4bf48428407d *man/am_equilibrium_parameters.Rd
+c58594d9188c10c72b201645a0adeef9 *man/am_simulate.Rd
+a719102505adbba357c6e2d36236dc5f *man/rb_dplr.Rd
+b0ebaf062539c2d65de9785c6e3e0077 *man/rb_unstr.Rd
