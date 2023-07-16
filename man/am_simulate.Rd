@@ -4,7 +4,7 @@
 \alias{am_simulate}
 \title{Simulate genotype/phenotype data under equilibrium univariate AM.}
 \usage{
-am_simulate(h2_0, r, m, n, min_MAF = 0.1)
+am_simulate(h2_0, r, m, n, afs = NULL, min_MAF = 0.1, haplotypes = FALSE)
 }
 \arguments{
 \item{h2_0}{generation zero (panmictic) heritability}
@@ -15,7 +15,14 @@ am_simulate(h2_0, r, m, n, min_MAF = 0.1)
 
 \item{n}{sample size}
 
-\item{min_MAF}{minimum minor allele frequency for causal variants}
+\item{afs}{(optional). Allele frequencies to use. If not provided, \code{m} will be drawn
+uniformly from the interval [\code{min_MAF}, 1-\code{min_MAF}]}
+
+\item{min_MAF}{(optional) minimum minor allele frequency for causal variants.
+Ignored if if \code{afs} is not NULL. Defaults to 0.1}
+
+\item{haplotypes}{logical. If TRUE, includes (phased) haploid genotypes in output.
+Defaults to FALSE}
 }
 \value{
 A list including the following objects:
@@ -23,9 +30,10 @@ A list including the following objects:
 \item \code{y}: phenotype vector
 \item \code{g}: heritable component of the phenotype vector
 \item \code{X}: matrix of diploid genotypes
-\item \code{AF}: vector of allele frequences
+\item \code{AF}: vector of allele frequenices
 \item \code{beta_std}: standardized genetic effects
 \item \code{beta_raw}: unstandardized genetic effects
+\item \code{H}: matrix of haploid genotypes (returned only if \code{haplotypes}=TRUE)
 }
 }
 \description{
