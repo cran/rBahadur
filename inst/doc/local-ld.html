@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>Combining assortative mating with realistic local LD</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Combining assortative mating with realistic
+local LD</h1>
+
+
+
+<div id="the-problem" class="section level2">
+<h2>The problem</h2>
+<p>Two very different processes create correlation between genetic
+markers.</p>
+<p>Recombination creates <strong>local</strong> linkage disequilibrium.
+Markers that sit close together on a chromosome are rarely separated by
+a crossover, so they travel together and their correlation decays with
+genetic distance. The resulting covariance matrix is essentially
+banded.</p>
+<p>Assortative mating creates <strong>global</strong> linkage
+disequilibrium. When mates resemble each other phenotypically, every
+causal variant becomes correlated with every other causal variant that
+affects the same trait, no matter which chromosome it sits on. The
+resulting covariance matrix is dense.</p>
+<p><code>am_simulate()</code> handles the second process exactly, but
+treats markers as unlinked, so it produces no local LD at all. Asking a
+single Bahadur order-2 distribution to produce both at once does not
+work: strong local correlations push the target matrix outside the
+feasible region described in <code>?am_covariance_structure</code>, and
+the sampler refuses.</p>
+<p><code>am_mosaic()</code> sidesteps this by combining the two rather
+than approximating them jointly.</p>
+</div>
+<div id="how-it-works" class="section level2">
+<h2>How it works</h2>
+<ol style="list-style-type: decimal">
+<li>Causal variants are drawn with <code>rb_dplr()</code>, exactly as in
+<code>am_simulate()</code>. This supplies the global assortative mating
+structure, and it is well behaved because causal variants are far apart
+and therefore only weakly correlated by linkage.</li>
+<li>The genome is partitioned into blocks, each containing exactly one
+causal variant. Block boundaries are drawn from the genetic map, so
+breakpoints concentrate where recombination actually occurs.</li>
+<li>Each block is filled by copying a contiguous stretch from a real
+reference haplotype, chosen from among those carrying the allele already
+drawn at that block’s causal variant.</li>
+</ol>
+<p>Because the copied stretches are real human haplotypes, local LD
+comes for free and is correct by construction. Because each donor is
+required to match at the causal variant, the assortative mating
+structure is left untouched.</p>
+</div>
+<div id="a-worked-example" class="section level2">
+<h2>A worked example</h2>
+<p>The package bundles a small real reference panel so this runs
+offline: a 1 Mb window of chromosome 22 from phase 3 of the 1000 Genomes
+Project, restricted to common biallelic SNVs, with genetic map positions
+attached.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(rBahadur)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>panel <span class="ot">&lt;-</span> <span class="fu">kg_reference</span>()</span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="fu">str</span>(panel[<span class="fu">c</span>(<span class="st">&quot;pos&quot;</span>, <span class="st">&quot;cM&quot;</span>, <span class="st">&quot;chrom&quot;</span>, <span class="st">&quot;build&quot;</span>)], <span class="at">max.level =</span> <span class="dv">1</span>)</span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="co">#&gt; List of 4</span></span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a><span class="co">#&gt;  $ pos  : int [1:2500] 20000241 20000644 20000722 20001153 20002089 20002119 20002367 20003266 20003544 20004427 ...</span></span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a><span class="co">#&gt;  $ cM   : num [1:2500] 11.1 11.1 11.1 11.1 11.1 ...</span></span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a><span class="co">#&gt;  $ chrom: chr &quot;22&quot;</span></span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a><span class="co">#&gt;  $ build: chr &quot;GRCh38&quot;</span></span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a><span class="fu">dim</span>(panel<span class="sc">$</span>haplotypes)</span>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a><span class="co">#&gt; [1]  520 2500</span></span></code></pre></div>
+<p>The panel carries real LD, which is the whole point of using it:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>H <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">as.integer</span>(panel<span class="sc">$</span>haplotypes), <span class="at">nrow =</span> <span class="fu">nrow</span>(panel<span class="sc">$</span>haplotypes))</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>ld_decay <span class="ot">&lt;-</span> <span class="cf">function</span>(G, pos, <span class="at">breaks =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">5</span>, <span class="dv">10</span>, <span class="dv">25</span>, <span class="dv">50</span>, <span class="dv">100</span>, <span class="dv">250</span>, <span class="dv">1000</span>)) {</span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>  <span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>  ii <span class="ot">&lt;-</span> <span class="fu">sort</span>(<span class="fu">sample</span>(<span class="fu">ncol</span>(G), <span class="dv">300</span>))</span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>  R <span class="ot">&lt;-</span> <span class="fu">suppressWarnings</span>(stats<span class="sc">::</span><span class="fu">cor</span>(G[, ii]))</span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>  d <span class="ot">&lt;-</span> <span class="fu">abs</span>(<span class="fu">outer</span>(pos[ii], pos[ii], <span class="st">&quot;-&quot;</span>)) <span class="sc">/</span> <span class="dv">1000</span></span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>  ut <span class="ot">&lt;-</span> <span class="fu">upper.tri</span>(R)</span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a>  <span class="fu">tapply</span>(R[ut]<span class="sc">^</span><span class="dv">2</span>, <span class="fu">cut</span>(d[ut], breaks), mean, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a>}</span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a></span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">ld_decay</span>(H, panel<span class="sc">$</span>pos), <span class="dv">4</span>)</span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a><span class="co">#&gt;       (0,5]      (5,10]     (10,25]     (25,50]    (50,100]   (100,250] </span></span>
+<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a><span class="co">#&gt;      0.2744      0.2170      0.1655      0.1123      0.0924      0.0358 </span></span>
+<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a><span class="co">#&gt; (250,1e+03] </span></span>
+<span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a><span class="co">#&gt;      0.0046</span></span></code></pre></div>
+<p>Now simulate under equilibrium assortative mating. We deliberately
+use few causal variants here, because with only 1 Mb of sequence a large
+number of causal variants would chop the region into blocks shorter than
+the LD itself. Calls below 50 causal variants normally warn that
+equilibrium quantities are large-locus targets; the warning is
+suppressed in this vignette because that finite-locus discrepancy is the
+subject of the next section.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">2026</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>sim <span class="ot">&lt;-</span> <span class="fu">am_mosaic</span>(<span class="at">h2_0 =</span> <span class="fl">0.5</span>, <span class="at">r =</span> <span class="fl">0.5</span>, <span class="at">n =</span> <span class="dv">1500</span>, <span class="at">panel =</span> panel, <span class="at">m =</span> <span class="dv">10</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="fu">dim</span>(sim<span class="sc">$</span>X)</span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="co">#&gt; [1] 1500 2500</span></span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a><span class="fu">length</span>(sim<span class="sc">$</span>causal_idx)</span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="co">#&gt; [1] 10</span></span></code></pre></div>
+<div id="the-assortative-mating-structure-is-preserved-exactly" class="section level3">
+<h3>The assortative mating structure is preserved exactly</h3>
+<p>The mosaic never alters a causal genotype. The genetic values
+recovered from the output matrix are identical, not merely close, to the
+ones the sampler produced:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>g_from_X <span class="ot">&lt;-</span> <span class="fu">as.vector</span>(sim<span class="sc">$</span>X[, sim<span class="sc">$</span>causal_idx, <span class="at">drop =</span> <span class="cn">FALSE</span>] <span class="sc">%*%</span> sim<span class="sc">$</span>beta_raw)</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="fu">all.equal</span>(g_from_X, <span class="fu">as.vector</span>(sim<span class="sc">$</span>g))</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>
+<p>That holds for any number of causal variants. Agreement with the
+<em>equilibrium variance</em> is a separate and weaker claim, because
+<code>vg_eq()</code> is derived in the limit of infinitely many causal
+variants. With only ten of them the simulation falls well short of
+it:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="fu">c</span>(<span class="at">empirical =</span> <span class="fu">var</span>(<span class="fu">as.vector</span>(sim<span class="sc">$</span>g)), <span class="at">infinitesimal_limit =</span> <span class="fu">vg_eq</span>(<span class="fl">0.5</span>, <span class="fl">0.5</span>, <span class="fl">0.5</span>))</span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="co">#&gt;           empirical infinitesimal_limit </span></span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a><span class="co">#&gt;           0.5763528           0.7071068</span></span></code></pre></div>
+<p>With enough causal variants the gap closes:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">11</span>)</span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>big <span class="ot">&lt;-</span> <span class="fu">am_mosaic</span>(<span class="at">h2_0 =</span> <span class="fl">0.5</span>, <span class="at">r =</span> <span class="fl">0.5</span>, <span class="at">n =</span> <span class="dv">1500</span>, <span class="at">panel =</span> panel, <span class="at">m =</span> <span class="dv">200</span>)</span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a><span class="fu">c</span>(<span class="at">empirical =</span> <span class="fu">var</span>(<span class="fu">as.vector</span>(big<span class="sc">$</span>g)), <span class="at">infinitesimal_limit =</span> <span class="fu">vg_eq</span>(<span class="fl">0.5</span>, <span class="fl">0.5</span>, <span class="fl">0.5</span>))</span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a><span class="co">#&gt;           empirical infinitesimal_limit </span></span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a><span class="co">#&gt;           0.7012119           0.7071068</span></span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a><span class="fu">c</span>(<span class="at">empirical =</span> <span class="fu">var</span>(<span class="fu">as.vector</span>(big<span class="sc">$</span>g)) <span class="sc">/</span> <span class="fu">var</span>(<span class="fu">as.vector</span>(big<span class="sc">$</span>y)),</span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a>  <span class="at">infinitesimal_limit =</span> <span class="fu">h2_eq</span>(<span class="fl">0.5</span>, <span class="fl">0.5</span>))</span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a><span class="co">#&gt;           empirical infinitesimal_limit </span></span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a><span class="co">#&gt;           0.5904037           0.5857864</span></span></code></pre></div>
+<p>Across replicates the shortfall runs to roughly 18% at ten causal
+variants and 10% at twenty five, and falls within a few percent, which
+is the replicate to replicate noise, from about fifty upward. This is a
+property of <code>vg_eq()</code> rather than of the mosaic, and
+<code>am_simulate()</code> behaves the same way.</p>
+</div>
+<div id="local-ld-is-preserved-too" class="section level3">
+<h3>Local LD is preserved too</h3>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">ld_decay</span>(sim<span class="sc">$</span>X, panel<span class="sc">$</span>pos), <span class="dv">4</span>)</span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="co">#&gt;       (0,5]      (5,10]     (10,25]     (25,50]    (50,100]   (100,250] </span></span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a><span class="co">#&gt;      0.2614      0.1945      0.1328      0.0685      0.0404      0.0058 </span></span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a><span class="co">#&gt; (250,1e+03] </span></span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a><span class="co">#&gt;      0.0007</span></span></code></pre></div>
+<p>Compare that with <code>am_simulate()</code>, which treats every
+marker as unlinked and therefore produces essentially no local
+structure:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">2026</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>flat <span class="ot">&lt;-</span> <span class="fu">am_simulate</span>(<span class="at">h2_0 =</span> <span class="fl">0.5</span>, <span class="at">r =</span> <span class="fl">0.5</span>, <span class="at">m =</span> <span class="dv">500</span>, <span class="at">n =</span> <span class="dv">1500</span>)</span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">ld_decay</span>(flat<span class="sc">$</span>X, panel<span class="sc">$</span>pos[<span class="fu">seq_len</span>(<span class="dv">500</span>)]), <span class="dv">4</span>)</span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a><span class="co">#&gt;       (0,5]      (5,10]     (10,25]     (25,50]    (50,100]   (100,250] </span></span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a><span class="co">#&gt;       7e-04       7e-04       7e-04       7e-04       7e-04       7e-04 </span></span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a><span class="co">#&gt; (250,1e+03] </span></span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a><span class="co">#&gt;          NA</span></span></code></pre></div>
+</div>
+</div>
+<div id="choosing-the-number-of-causal-variants" class="section level2">
+<h2>Choosing the number of causal variants</h2>
+<p>There is a real tradeoff here and it is worth being explicit about.
+Blocks are delimited by causal variants, so the number of causal
+variants sets the block length, and LD cannot survive across a block
+boundary except through the causal variants themselves.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a>reach <span class="ot">&lt;-</span> <span class="fu">sapply</span>(<span class="fu">c</span>(<span class="dv">5</span>, <span class="dv">20</span>, <span class="dv">80</span>), <span class="cf">function</span>(m) {</span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>  <span class="fu">set.seed</span>(<span class="dv">3</span>)</span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a>  s <span class="ot">&lt;-</span> <span class="fu">am_mosaic</span>(<span class="fl">0.5</span>, <span class="fl">0.3</span>, <span class="at">n =</span> <span class="dv">400</span>, <span class="at">panel =</span> panel, <span class="at">m =</span> m)</span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a>  d <span class="ot">&lt;-</span> <span class="fu">ld_decay</span>(s<span class="sc">$</span>X, panel<span class="sc">$</span>pos)</span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a>  d[[<span class="st">&quot;(10,25]&quot;</span>]]</span>
+<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a>})</span>
+<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a><span class="fu">data.frame</span>(<span class="at">m =</span> <span class="fu">c</span>(<span class="dv">5</span>, <span class="dv">20</span>, <span class="dv">80</span>),</span>
+<span id="cb9-8"><a href="#cb9-8" tabindex="-1"></a>           <span class="at">mean_block_kb =</span> <span class="fu">round</span>(<span class="fu">diff</span>(<span class="fu">range</span>(panel<span class="sc">$</span>pos)) <span class="sc">/</span> <span class="dv">1000</span> <span class="sc">/</span> <span class="fu">c</span>(<span class="dv">5</span>, <span class="dv">20</span>, <span class="dv">80</span>)),</span>
+<span id="cb9-9"><a href="#cb9-9" tabindex="-1"></a>           <span class="at">r2_at_10_25kb =</span> <span class="fu">round</span>(reach, <span class="dv">4</span>))</span>
+<span id="cb9-10"><a href="#cb9-10" tabindex="-1"></a><span class="co">#&gt;    m mean_block_kb r2_at_10_25kb</span></span>
+<span id="cb9-11"><a href="#cb9-11" tabindex="-1"></a><span class="co">#&gt; 1  5           200        0.1580</span></span>
+<span id="cb9-12"><a href="#cb9-12" tabindex="-1"></a><span class="co">#&gt; 2 20            50        0.0932</span></span>
+<span id="cb9-13"><a href="#cb9-13" tabindex="-1"></a><span class="co">#&gt; 3 80            12        0.0114</span></span></code></pre></div>
+<p>So there are two pressures pulling in opposite directions. Local LD
+wants <strong>few</strong> causal variants, so that blocks stay long.
+The equilibrium variance formulas want <strong>many</strong>, because
+they are infinitesimal-limit results. In this 1 Mb window those
+pressures genuinely conflict, and neither ten nor two hundred causal
+variants satisfies both.</p>
+<p>At genome scale the conflict disappears, which is the situation the
+method is built for. A thousand causal variants spread across three
+billion base pairs gives blocks averaging several megabases, far longer
+than the tens of kilobases over which human LD decays, while a thousand
+is more than enough for the equilibrium formulas. The tension here is an
+artifact of demonstrating on 1 Mb.</p>
+<p>The practical rule: choose the number of causal variants so the
+average block comfortably exceeds the LD decay length of your region,
+then check that the number you land on is at least a few hundred. If it
+is not, your region is too small to want this method rather than
+<code>am_simulate()</code>.</p>
+</div>
+<div id="working-at-realistic-scale" class="section level2">
+<h2>Working at realistic scale</h2>
+<p>For real use you want a whole chromosome rather than 1 Mb. Two
+helpers build a panel from real data. Neither is run here because both
+need network access and a substantial download.</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="do">## build a panel directly from files you already have</span></span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a>panel <span class="ot">&lt;-</span> <span class="fu">vcf_to_panel</span>(</span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a>  <span class="at">vcf =</span> <span class="st">&quot;ALL.chr22.shapeit2_integrated_v1a.GRCh38.20181129.phased.vcf.gz&quot;</span>,</span>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a>  <span class="at">map =</span> <span class="st">&quot;plink.chr22.GRCh38.map&quot;</span>,</span>
+<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a>  <span class="at">min_maf =</span> <span class="fl">0.01</span></span>
+<span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a>)</span>
+<span id="cb10-7"><a href="#cb10-7" tabindex="-1"></a></span>
+<span id="cb10-8"><a href="#cb10-8" tabindex="-1"></a><span class="do">## or fetch a region of 1000 Genomes and its genetic map in one call</span></span>
+<span id="cb10-9"><a href="#cb10-9" tabindex="-1"></a>panel <span class="ot">&lt;-</span> <span class="fu">download_1kg_panel</span>(<span class="at">chrom =</span> <span class="st">&quot;22&quot;</span>, <span class="at">start =</span> <span class="fl">20e6</span>, <span class="at">end =</span> <span class="fl">30e6</span>)</span></code></pre></div>
+<p>A phased VCF is strongly recommended. Unphased calls are accepted,
+but the function warns because their written allele order must be
+treated as phase; that arbitrary ordering can create artificial
+haplotypes and local LD.</p>
+<p>At that size the genotype matrix stops fitting comfortably in memory,
+so <code>am_mosaic()</code> takes the same <code>path</code>,
+<code>format</code>, and <code>batch_size</code> arguments as
+<code>am_simulate()</code> and streams straight to disk:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a>out <span class="ot">&lt;-</span> <span class="fu">am_mosaic</span>(<span class="at">h2_0 =</span> <span class="fl">0.5</span>, <span class="at">r =</span> <span class="fl">0.5</span>, <span class="at">n =</span> <span class="dv">50000</span>, <span class="at">panel =</span> panel, <span class="at">m =</span> <span class="dv">2000</span>,</span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a>                 <span class="at">path =</span> <span class="st">&quot;chr22_am&quot;</span>, <span class="at">format =</span> <span class="st">&quot;bed&quot;</span>)</span>
+<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a></span>
+<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a><span class="do">## readable by plink, GCTA, or any other standard tool</span></span>
+<span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a><span class="do">## and by read_genotypes() back in R</span></span>
+<span id="cb11-6"><a href="#cb11-6" tabindex="-1"></a><span class="do">## the .bim preserves chromosome, position, map, ID, and allele metadata</span></span></code></pre></div>
+</div>
+<div id="limitations" class="section level2">
+<h2>Limitations</h2>
+<p>The simulated haplotypes are mosaics of panel haplotypes, so the
+method cannot create variation the panel does not contain. A small panel
+will show inflated identity by descent between simulated individuals,
+and rare variants present in only a handful of panel haplotypes will be
+over-represented in some simulated samples. Use the largest reference
+panel you reasonably can.</p>
+<p>Correlation across a block boundary is broken apart from what the
+causal variants carry, so the method reproduces LD <em>within</em>
+blocks faithfully rather than reproducing the full correlation structure
+of the region. That is the price of keeping the assortative mating
+structure exact.</p>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
